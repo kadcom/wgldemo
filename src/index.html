@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#TipisTipisGrafika</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-[#fff8dc] overflow-hidden h-screen flex flex-col p-0 m-0">
+
+    <!-- Title -->
+    <header class="bg-[#E24912] w-full">
+        <h1 class="py-4 text-3xl font-bold text-center text-white"> #TipisTipisGrafika </h1>
+    </header>
+
+    <!-- WebGL Container with margin -->
+    <div class="flex items-center justify-center flex-grow my-4">
+        <div class="w-full max-w-[calc(100vh*16/9)] h-full max-h-[calc(100vw*9/16)] relative">
+            <canvas id="webgl-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#E24912] w-full">
+        <p class="py-2 text-sm text-center text-white">Copyright (c) 2023 Didiet Noor</p>
+    </footer>
+
+    <!-- WebGL and other necessary scripts -->
+    <script src="app.ts" type="module"></script>
+</body>
+</html>
+
