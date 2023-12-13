@@ -26,4 +26,4 @@ const main = () => {
   render(gl);
 }
 
-main();
+window.onload = main
