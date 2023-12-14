@@ -3,7 +3,7 @@
 import vert from './shader.vert';
 import frag from './shader.frag';
 
-const loadShader = (gl: WebGL2RenderingContext, type: number, source: string) : WebGLShader | null => {
+const loadShader = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null => {
   const sh = gl.createShader(type);
 
   if (sh == null) {
