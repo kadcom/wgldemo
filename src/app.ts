@@ -51,8 +51,6 @@ const initWebGL = (canvasId: string): WebGL2RenderingContext | null => {
     return null 
   }
 
-  initShaderProgram(gl);
-
   return gl
 }
 
