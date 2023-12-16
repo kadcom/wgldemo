@@ -13,6 +13,8 @@ const vertices = [
     -0.5, -0.5
 ];
 
+const red = [0.0, 1.0, 1.0];
+
 const vert_stride = 2;
 const vert_num = vertices.length / vert_stride;
 
@@ -43,6 +45,9 @@ const drawTriangle = (gl: WebGL2RenderingContext, program: WebGLProgram, buffer:
     vert_stride * Float32Array.BYTES_PER_ELEMENT,
     0
   );
+
+  const colourUniformLocation = gl.getUniformLocation(program, 'uColour');
+  gl.uniform3fv(colourUniformLocation, red);
    
   gl.useProgram(program);
   gl.drawArrays(gl.TRIANGLES, 0, vert_num);
