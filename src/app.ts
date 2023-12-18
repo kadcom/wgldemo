@@ -3,23 +3,32 @@
 import vert from './shader.vert';
 import frag from './shader.frag';
 
+type Mesh = {
+  vertexBuffer: WebGLBuffer;
+  indexBuffer: WebGLBuffer;
+  numIndices: number;
+}
+
 const vertices = [
    -0.5, 0.5,     
     0.5, 0.5, 
-    0.5, -0.5,
-
-    -0.5, 0.5,
-    0.5, -0.5,
+    0.5, -0.5, 
     -0.5, -0.5
 ];
 
-const red = [0.0, 1.0, 1.0];
+const indices = [
+  0, 1, 2,
+  2, 3, 0,
+];
+
+
+const colour = [0.0, 1.0, 1.0];
 
 const vert_stride = 2;
-const vert_num = vertices.length / vert_stride;
 
-const initBuffers = (gl: WebGL2RenderingContext): WebGLBuffer|null => {
+const initMesh = (gl: WebGL2RenderingContext): Mesh|null => {
   const vertArray = new Float32Array(vertices);
+  const indexArray = new Uint16Array(indices);
 
   const buffer = gl.createBuffer();
   if (!buffer) {
@@ -27,14 +36,34 @@ const initBuffers = (gl: WebGL2RenderingContext): WebGLBuffer|null => {
     return null;
   }
 
+  const indexBuffer = gl.createBuffer();
+  if (!indexBuffer) {
+    console.log('Unable to create index buffer');
+    return null;
+  }
+
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertArray, gl.STATIC_DRAW);
 
-  return buffer;
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  return {
+    vertexBuffer: buffer,
+    indexBuffer: indexBuffer,
+    numIndices: indices.length
+  }
 }
 
-const drawTriangle = (gl: WebGL2RenderingContext, program: WebGLProgram, buffer: WebGLBuffer) => {
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) => {
+  gl.useProgram(program);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
+
   const positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
   gl.enableVertexAttribArray(positionAttribLocation);
   gl.vertexAttribPointer(
@@ -47,11 +76,8 @@ const drawTriangle = (gl: WebGL2RenderingContext, program: WebGLProgram, buffer:
   );
 
   const colourUniformLocation = gl.getUniformLocation(program, 'uColour');
-  gl.uniform3fv(colourUniformLocation, red);
-   
-  gl.useProgram(program);
-  gl.drawArrays(gl.TRIANGLES, 0, vert_num);
-
+  gl.uniform3fv(colourUniformLocation, colour); 
+  gl.drawElements(gl.TRIANGLES, mesh.numIndices, gl.UNSIGNED_SHORT, 0);
 }
 
 const loadShader = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null => {
@@ -96,7 +122,6 @@ const initWebGL = (canvasId: string): WebGL2RenderingContext | null => {
   const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
-
   if (!gl) {
     alert("Unable to initialise WebGL 2, Your browser may not support it");
     return null 
@@ -105,13 +130,13 @@ const initWebGL = (canvasId: string): WebGL2RenderingContext | null => {
   return gl
 }
 
-const render = (gl: WebGL2RenderingContext, program: WebGLProgram, buffer: WebGLBuffer) => {
+const render = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) => {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  drawTriangle(gl, program, buffer);
+  drawMesh(gl, program, mesh);
 
-  requestAnimationFrame(()  => render(gl, program, buffer))
+  requestAnimationFrame(()  => render(gl, program, mesh))
 }
 
 const main = () => {
@@ -121,7 +146,7 @@ const main = () => {
   const program = initShaderProgram(gl);
   if (!program) return;
 
-  const buffer = initBuffers(gl);
+  const buffer = initMesh(gl);
   if (!buffer) return;
 
   render(gl, program, buffer);
