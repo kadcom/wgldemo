@@ -80,6 +80,21 @@ class Mat4x4 {
     return mat;
   }
 
+  // rotate Z, left-handed, post-multiply, positive angle is clockwise
+  static rotateZ(angle: number): Mat4x4 {
+    const mat = Mat4x4.identity();
+
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    mat.m11 = cos;
+    mat.m12 = -sin;
+    mat.m21 = sin;
+    mat.m22 = cos;
+
+    return mat;
+  }
+
   static identity(): Mat4x4 {
     const mat = new Mat4x4();
     mat.m11 = 1.0;
