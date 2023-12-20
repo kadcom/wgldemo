@@ -30,9 +30,12 @@ const vert_component = 3;
 
 const scaleMatrix = Mat4x4.scale(0.5, 0.5, 0.5);
 const translateMatrix = Mat4x4.translate(0.5, 0.5, 0.0);
-const rotateMatrix = Mat4x4.rotateZ(deg2rad(45));
+const rotateMatrix = Mat4x4.identity();
 
-const transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
+const aspect = 16.0 / 9.0;
+const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
+
+const transformMatrix = projectionMatrix; 
 
 const initMesh = (gl: WebGL2RenderingContext): Mesh|null => {
   const vertArray = new Float32Array(vertices);

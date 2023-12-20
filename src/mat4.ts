@@ -80,15 +80,6 @@ class Mat4x4 {
     return mat;
   }
 
-  static rotateZ(radian: number): Mat4x4 {
-    const mat = Mat4x4.identity();
-    mat.m11 = Math.cos(radian);
-    mat.m12 = Math.sin(radian);
-    mat.m21 = -Math.sin(radian);
-    mat.m22 = Math.cos(radian);
-    return mat;
-  }
-
   static identity(): Mat4x4 {
     const mat = new Mat4x4();
     mat.m11 = 1.0;
@@ -96,6 +87,28 @@ class Mat4x4 {
     mat.m33 = 1.0;
     mat.m44 = 1.0;
     return mat;
+  }
+
+  static orthoOffCenter(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4x4 {
+    const mat = Mat4x4.identity();
+    const width = right - left;
+    const height = top - bottom;
+    const depth = far - near;
+
+    mat.m11 = 2.0 / width;
+    mat.m22 = 2.0 / height;
+    mat.m33 = 2.0 / depth;
+    mat.m41 = -(right + left) / width;
+    mat.m42 = -(top + bottom) / height;
+    mat.m43 = -(far + near) / depth;
+    return mat;
+  }
+
+  static ortho(width: number, height: number, near: number, far: number): Mat4x4 {
+    const halfWidth = width / 2.0;
+    const halfHeight = height / 2.0;
+    
+    return Mat4x4.orthoOffCenter(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
   }
 
 };
