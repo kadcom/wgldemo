@@ -2,6 +2,7 @@
 
 import vert from './shader.vert';
 import frag from './shader.frag';
+import {Mat4x4, deg2rad} from './mat4';
 
 type Mesh = {
   vertexBuffer: WebGLBuffer;
@@ -10,10 +11,10 @@ type Mesh = {
 }
 
 const vertices = [
-   -0.5, 0.5,     
-    0.5, 0.5, 
-    0.5, -0.5, 
-    -0.5, -0.5
+   -0.5, 0.5, 0.0 ,  
+    0.5, 0.5, 0.0,
+    0.5, -0.5, 0.0,
+    -0.5, -0.5, 0.0,
 ];
 
 const indices = [
@@ -24,7 +25,14 @@ const indices = [
 
 const colour = [0.0, 1.0, 1.0];
 
-const vert_stride = 2;
+const vert_stride = 3;
+const vert_component = 3;
+
+const scaleMatrix = Mat4x4.scale(0.5, 0.5, 0.5);
+const translateMatrix = Mat4x4.translate(0.5, 0.5, 0.0);
+const rotateMatrix = Mat4x4.rotateZ(deg2rad(45));
+
+const transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
 
 const initMesh = (gl: WebGL2RenderingContext): Mesh|null => {
   const vertArray = new Float32Array(vertices);
@@ -68,7 +76,7 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
   gl.enableVertexAttribArray(positionAttribLocation);
   gl.vertexAttribPointer(
     positionAttribLocation, 
-    2, 
+    vert_component, 
     gl.FLOAT, 
     false,
     vert_stride * Float32Array.BYTES_PER_ELEMENT,
@@ -76,7 +84,11 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
   );
 
   const colourUniformLocation = gl.getUniformLocation(program, 'uColour');
-  gl.uniform3fv(colourUniformLocation, colour); 
+  gl.uniform3fv(colourUniformLocation, colour);
+
+  const transformUniformLocation = gl.getUniformLocation(program, 'uTransformMatrix');
+  gl.uniformMatrix4fv(transformUniformLocation, true, transformMatrix.data); 
+
   gl.drawElements(gl.TRIANGLES, mesh.numIndices, gl.UNSIGNED_SHORT, 0);
 }
 
