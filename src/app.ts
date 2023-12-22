@@ -11,27 +11,52 @@ type Mesh = {
 }
 
 const vertices = [
-   -0.5, 0.5, 0.0 ,  
-    0.5, 0.5, 0.0,
-    0.5, -0.5, 0.0,
-    -0.5, -0.5, 0.0,
+   -1,  1,  0, 1, 0, 0, // 0 
+    1,  1,  0, 0, 1, 0, // 1
+    1, -1,  0, 0, 0, 1, // 2
+   -1, -1,  0, 1, 1, 0, // 3
+
+   -1,  1,  1, 1, 0, 1, // 4
+    1,  1,  1, 0, 1, 1, // 5
+    1, -1,  1, 1, 1, 1, // 6
+   -1, -1,  1, 0, 0, 0, // 7
 ];
 
 const indices = [
+  // front side 
   0, 1, 2,
   2, 3, 0,
+
+  // right side
+  1, 5, 6,
+  6, 2, 1,
+
+  // back side
+  4, 5, 6,
+  6, 7, 4,
+
+  // left side
+  0, 4, 7,
+  7, 3, 0,
+
+  // top side 
+  0, 1, 5,
+  5, 4, 0,
+
+  // bottom side
+  3, 2, 6,
+  6, 7, 3
 ];
 
 
-const colour = [0.0, 1.0, 1.0];
-
-const vert_stride = 3;
+const vert_stride = 6;
 const vert_component = 3;
-const rotDegree = 60;
+const rotDegree = 45;
 
-const scaleMatrix = Mat4x4.scale(0.5, 0.5, 0.5);
-const translateMatrix = Mat4x4.translate(0.5, -0.3, 0.0);
-const rotateMatrix = Mat4x4.rotateZ(deg2rad(rotDegree));
+const scaleMatrix = Mat4x4.identity();
+
+const translateMatrix = Mat4x4.identity();
+const rotateMatrix = Mat4x4.identity();
 
 const aspect = 16.0 / 9.0;
 const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
@@ -89,8 +114,16 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
     0
   );
 
-  const colourUniformLocation = gl.getUniformLocation(program, 'uColour');
-  gl.uniform3fv(colourUniformLocation, colour);
+  const colourAttribLocation = gl.getAttribLocation(program, 'aVertexColour');
+  gl.enableVertexAttribArray(colourAttribLocation);
+  gl.vertexAttribPointer(
+    colourAttribLocation, 
+    3, 
+    gl.FLOAT, 
+    false,
+    vert_stride * Float32Array.BYTES_PER_ELEMENT,
+    vert_component * Float32Array.BYTES_PER_ELEMENT
+  );
 
   const transformUniformLocation = gl.getUniformLocation(program, 'uTransformMatrix');
   gl.uniformMatrix4fv(transformUniformLocation, true, transformMatrix.data); 
@@ -150,7 +183,8 @@ const initWebGL = (canvasId: string): WebGL2RenderingContext | null => {
 
 const render = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) => {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST);
 
   drawMesh(gl, program, mesh);
 
