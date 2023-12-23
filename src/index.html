@@ -19,6 +19,30 @@
             <canvas id="webgl-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
         </div>
     </div>
+    <!-- rotation sliders -->
+    <div class="px-4 space-y-4">
+    <div class="flex items-center">
+        <label for="x-rotation" class="mr-2">X Rotation:</label>
+        <input type="range" id="x-rotation" name="x-rotation" min="-180" max="180" value="0" class="mr-2">
+        <span id="x-rotation-value">0°</span>
+    </div>
+    <div class="flex items-center">
+        <label for="y-rotation" class="mr-2">Y Rotation:</label>
+        <input type="range" id="y-rotation" name="y-rotation" min="-180" max="180" value="0" class="mr-2">
+        <span id="y-rotation-value">0°</span>
+    </div>
+    <div class="flex items-center">
+        <label for="z-rotation" class="mr-2">Z Rotation:</label>
+        <input type="range" id="z-rotation" name="z-rotation" min="-180" max="180" value="0" class="mr-2">
+        <span id="z-rotation-value">0°</span>
+    </div>
+<div class="flex items-center">
+        <label for="scale" class="mr-2">Scale:</label>
+        <input type="range" id="scale" name="scale" min="1" max="100" value="100" class="mr-2">
+        <span id="scale-value">100%</span>
+    </div>
+
+</div>
 
     <!-- Footer -->
     <footer class="bg-[#E24912] w-full">

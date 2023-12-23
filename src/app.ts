@@ -51,19 +51,33 @@ const indices = [
 
 const vert_stride = 6;
 const vert_component = 3;
-const rotDegree = 45;
-
-const scaleMatrix = Mat4x4.identity();
-
 const translateMatrix = Mat4x4.identity();
-const rotateMatrix = Mat4x4.identity();
 
 const aspect = 16.0 / 9.0;
 const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
 
-// S R T P
+let rotX = 0.0;
+let rotY = 0.0;
+let rotZ = 0.0;
+let scale = 1.0;
 
-const transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix).multiply(projectionMatrix);
+
+let scaleMatrix = Mat4x4.identity();
+let rotateMatrix = Mat4x4.identity();
+
+// S R T P
+let transformMatrix = Mat4x4.identity();
+
+const updateTransform = () => {
+  scaleMatrix = Mat4x4.scale(scale, scale, scale);
+
+  rotateMatrix = Mat4x4.rotateX(deg2rad(rotX)).multiply(Mat4x4.rotateY(deg2rad(rotY))).multiply(Mat4x4.rotateZ(deg2rad(rotZ)));
+
+  transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix).multiply(projectionMatrix);
+}
+
+updateTransform();
+
 
 const initMesh = (gl: WebGL2RenderingContext): Mesh|null => {
   const vertArray = new Float32Array(vertices);
@@ -186,9 +200,41 @@ const render = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) =
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.enable(gl.DEPTH_TEST);
 
+  gl.frontFace(gl.CW);
+  gl.cullFace(gl.BACK);
+  gl.enable(gl.CULL_FACE);
+
   drawMesh(gl, program, mesh);
 
   requestAnimationFrame(()  => render(gl, program, mesh))
+}
+
+const setupSlider = (sliderId: string, 
+                     sliderUnit: string|null, 
+                     updateFunc: ((value: number) => void)|null) => 
+{
+  const sliderElem = document.getElementById(sliderId);
+  const outputElem = document.getElementById(sliderId + '-value');
+
+  if (!sliderElem || !outputElem) {
+    return;
+  }
+
+  const slider = sliderElem as HTMLInputElement;
+  const output = outputElem as HTMLSpanElement;
+
+  const unitStr = sliderUnit ? sliderUnit : '';
+
+  slider.addEventListener('input', (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const value = parseFloat(target.value);
+    output.textContent = value + unitStr;
+
+    if (!updateFunc) {
+      return;
+    }
+    updateFunc(value);
+  });
 }
 
 const main = () => {
@@ -200,6 +246,26 @@ const main = () => {
 
   const buffer = initMesh(gl);
   if (!buffer) return;
+
+  setupSlider('z-rotation', '°', (value: number) => {
+    rotZ = value;
+    updateTransform();
+  });
+
+  setupSlider('y-rotation', '°', (value: number) => {
+    rotY = value;
+    updateTransform();
+  });
+
+  setupSlider('x-rotation', '°', (value: number) => {
+    rotX = value;
+    updateTransform();
+  });
+
+  setupSlider('scale', null, (value: number) => {
+    scale = value * 0.01;
+    updateTransform();
+  });
 
   render(gl, program, buffer);
 }
