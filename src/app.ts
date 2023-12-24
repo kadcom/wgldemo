@@ -51,10 +51,11 @@ const indices = [
 
 const vert_stride = 6;
 const vert_component = 3;
-const translateMatrix = Mat4x4.identity();
+const translateMatrix = Mat4x4.translate(0.0, 0.0, 5.0);
 
 const aspect = 16.0 / 9.0;
-const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
+// const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, 0.1, 100);
+const projectionMatrix = Mat4x4.perspective(deg2rad(45.0), aspect, 0.1, 100.0);
 
 let rotX = 0.0;
 let rotY = 0.0;

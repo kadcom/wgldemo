@@ -154,6 +154,19 @@ class Mat4x4 {
     return Mat4x4.orthoOffCenter(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
   }
 
+  static perspective(fov: number, aspect: number, near: number, far: number): Mat4x4 {
+    const depth = far - near;
+    const cot = 1.0 / Math.tan(fov / 2.0);
+
+    const mat = new Mat4x4();
+    mat.m11 = cot / aspect;
+    mat.m22 = cot;
+    mat.m33 = (far + near) / depth;
+    mat.m34 = 1.0;
+    mat.m43 = -2.0 * near * far / depth;
+
+    return mat;
+  }
 };
 
 const deg2rad = (deg: number): number => {
