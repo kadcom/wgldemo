@@ -27,23 +27,21 @@ const indices = [
   0, 1, 2,
   2, 3, 0,
 
-  // right side
-  1, 5, 6,
-  6, 2, 1,
-
   // back side
   4, 6, 5,
-  4, 7, 6,
+  6, 4, 7,
+
+  // right side
+  1, 5, 6,
+  6, 2, 1, 
 
   // left side
   0, 7, 4,
-  0, 3, 7,
-  // 7, 3, 0,
+  7, 0, 3,
 
   // top side 
   0, 5, 1,
-  0, 4, 5,
-  // 5, 4, 0,
+  5, 0, 4,
 
   // bottom side
   3, 2, 6,
@@ -199,15 +197,17 @@ const initWebGL = (canvasId: string): WebGL2RenderingContext | null => {
 
 const render = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) => {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.clearDepth(1.0);
+  gl.depthFunc(gl.LEQUAL); 
   gl.enable(gl.DEPTH_TEST);
 
   gl.frontFace(gl.CW);
   gl.cullFace(gl.BACK);
   gl.enable(gl.CULL_FACE);
 
-  drawMesh(gl, program, mesh);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  drawMesh(gl, program, mesh);
   requestAnimationFrame(()  => render(gl, program, mesh))
 }
 
