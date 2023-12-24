@@ -73,7 +73,7 @@ const updateTransform = () => {
 
   rotateMatrix = Mat4x4.rotateX(deg2rad(rotX)).multiply(Mat4x4.rotateY(deg2rad(rotY))).multiply(Mat4x4.rotateZ(deg2rad(rotZ)));
 
-  transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix).multiply(projectionMatrix);
+  transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
 }
 
 updateTransform();
@@ -139,8 +139,12 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
     vert_component * Float32Array.BYTES_PER_ELEMENT
   );
 
-  const transformUniformLocation = gl.getUniformLocation(program, 'uTransformMatrix');
-  gl.uniformMatrix4fv(transformUniformLocation, true, transformMatrix.data); 
+  const modelUniformLocation = gl.getUniformLocation(program, 'uModelMatrix');
+  gl.uniformMatrix4fv(modelUniformLocation, true, transformMatrix.data);
+
+  const projectionUniformLocation = gl.getUniformLocation(program, 'uProjectionMatrix');
+  gl.uniformMatrix4fv(projectionUniformLocation, true, projectionMatrix.data);
+
 
   gl.drawElements(gl.TRIANGLES, mesh.numIndices, gl.UNSIGNED_SHORT, 0);
 }
