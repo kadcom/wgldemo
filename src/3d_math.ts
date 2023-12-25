@@ -150,7 +150,7 @@ class Mat4x4 {
   static ortho(width: number, height: number, near: number, far: number): Mat4x4 {
     const halfWidth = width / 2.0;
     const halfHeight = height / 2.0;
-    
+
     return Mat4x4.orthoOffCenter(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
   }
 
@@ -174,28 +174,102 @@ const deg2rad = (deg: number): number => {
   return deg * Math.PI / 180.0;
 }
 
+const epsilon = 0.00001;
+
+const isEquals = (a: number, b: number): boolean => {
+  return Math.abs(a - b) < epsilon;
+}
+
 class Transform {
-  // scale 
-  scale: number = 1.0;
 
-  // rotation
-  yaw: number = 0.0;
-  pitch: number = 0.0;
-  roll: number = 0.0;
+  private _yaw: number = 0.0;
+  private _pitch: number = 0.0;
+  private _roll: number = 0.0;
+  private _scale: number = 1.0;
+  private _x: number = 0.0;
+  private _y: number = 0.0;
+  private _z: number = 0.0;
 
-  // translation
-  x: number = 0.0;
-  y: number = 0.0;
-  z: number = 0.0;
+  private matrixCache: Mat4x4|null = null;
+  private dirty: boolean = true;
 
-  get matrix(): Mat4x4 {
+  private markDirty(): void {
+    this.dirty = true;
+  }
+
+  get yaw(): number { return this._yaw; }
+  get pitch(): number { return this._pitch; }
+  get roll(): number { return this._roll; }
+  get scale(): number { return this._scale; }
+  get x(): number { return this._x; }
+  get y(): number { return this._y; }
+  get z(): number { return this._z; }
+
+  set yaw(value: number) {
+    if (!isEquals(this._yaw, value)) {
+      this._yaw = value;
+      this.markDirty();
+    }
+  }
+
+  set pitch(value: number) {
+    if (!isEquals(this._pitch, value)) {
+      this._pitch = value;
+      this.markDirty();
+    }
+  }
+
+  set roll(value: number) {
+    if (!isEquals(this._roll, value)) {
+      this._roll = value;
+      this.markDirty();
+    }
+  }
+
+  set scale(value: number) {
+    if (!isEquals(this._scale, value)) {
+      this._scale = value;
+      this.markDirty();
+    }
+  }
+
+  set x(value: number) {
+    if (!isEquals(this._x, value)) {
+      this._x = value;
+      this.markDirty();
+    }
+  }
+
+  set y(value: number) {
+    if (!isEquals(this._y, value)) {
+      this._y = value;
+      this.markDirty();
+    }
+  }
+
+  set z(value: number) {
+    if (!isEquals(this._z, value)) {
+      this._z = value;
+      this.markDirty();
+    }
+  }
+
+  private updateMatrix(): void {
     const scaleMatrix = Mat4x4.scale(this.scale, this.scale, this.scale);
     const rotateMatrix = Mat4x4.rotateZ(deg2rad(this.roll))
     .multiply(Mat4x4.rotateX(deg2rad(this.pitch)))
     .multiply(Mat4x4.rotateY(deg2rad(this.yaw)));
     const translateMatrix = Mat4x4.translate(this.x, this.y, this.z);
 
-    return scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
+    this.matrixCache = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
+    this.dirty = false;
+  }
+
+  get matrix(): Mat4x4 {
+    if (this.dirty || this.matrixCache === null) {
+      this.updateMatrix();
+    }
+    return this.matrixCache!;
   }
 }
 
