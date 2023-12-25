@@ -155,22 +155,49 @@ class Mat4x4 {
   }
 
   static perspective(fov: number, aspect: number, near: number, far: number): Mat4x4 {
-    const depth = far - near;
-    const cot = 1.0 / Math.tan(fov / 2.0);
-
     const mat = new Mat4x4();
-    mat.m11 = cot / aspect;
-    mat.m22 = cot;
+    const tanHalfFov = Math.tan(fov / 2.0);
+    const depth = far - near;
+
+    mat.m11 = 1.0 / (aspect * tanHalfFov);
+    mat.m22 = 1.0 / tanHalfFov;
     mat.m33 = (far + near) / depth;
     mat.m34 = 1.0;
     mat.m43 = -2.0 * near * far / depth;
 
     return mat;
   }
+
 };
 
 const deg2rad = (deg: number): number => {
   return deg * Math.PI / 180.0;
 }
 
-export { Mat4x4, deg2rad };
+class Transform {
+  // scale 
+  scale: number = 1.0;
+
+  // rotation
+  yaw: number = 0.0;
+  pitch: number = 0.0;
+  roll: number = 0.0;
+
+  // translation
+  x: number = 0.0;
+  y: number = 0.0;
+  z: number = 0.0;
+
+  get matrix(): Mat4x4 {
+    const scaleMatrix = Mat4x4.scale(this.scale, this.scale, this.scale);
+    const rotateMatrix = Mat4x4.rotateZ(deg2rad(this.roll))
+    .multiply(Mat4x4.rotateX(deg2rad(this.pitch)))
+    .multiply(Mat4x4.rotateY(deg2rad(this.yaw)));
+    const translateMatrix = Mat4x4.translate(this.x, this.y, this.z);
+
+    return scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
+  }
+}
+
+
+export { Mat4x4, deg2rad, Transform };

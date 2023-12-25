@@ -2,7 +2,7 @@
 
 import vert from './shader.vert';
 import frag from './shader.frag';
-import {Mat4x4, deg2rad} from './mat4';
+import {Mat4x4, Transform, deg2rad} from './3d_math';
 
 type Mesh = {
   vertexBuffer: WebGLBuffer;
@@ -51,34 +51,12 @@ const indices = [
 
 const vert_stride = 6;
 const vert_component = 3;
-const translateMatrix = Mat4x4.translate(0.0, 0.0, 5.0);
 
 const aspect = 16.0 / 9.0;
-// const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, 0.1, 100);
+// const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
 const projectionMatrix = Mat4x4.perspective(deg2rad(45.0), aspect, 0.1, 100.0);
 
-let rotX = 0.0;
-let rotY = 0.0;
-let rotZ = 0.0;
-let scale = 1.0;
-
-
-let scaleMatrix = Mat4x4.identity();
-let rotateMatrix = Mat4x4.identity();
-
-// S R T P
-let transformMatrix = Mat4x4.identity();
-
-const updateTransform = () => {
-  scaleMatrix = Mat4x4.scale(scale, scale, scale);
-
-  rotateMatrix = Mat4x4.rotateX(deg2rad(rotX)).multiply(Mat4x4.rotateY(deg2rad(rotY))).multiply(Mat4x4.rotateZ(deg2rad(rotZ)));
-
-  transformMatrix = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
-}
-
-updateTransform();
-
+const transform = new Transform();
 
 const initMesh = (gl: WebGL2RenderingContext): Mesh|null => {
   const vertArray = new Float32Array(vertices);
@@ -140,12 +118,11 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
     vert_component * Float32Array.BYTES_PER_ELEMENT
   );
 
-  const modelUniformLocation = gl.getUniformLocation(program, 'uModelMatrix');
-  gl.uniformMatrix4fv(modelUniformLocation, true, transformMatrix.data);
+  const transformUniformLocation = gl.getUniformLocation(program, 'uModelTransformMatrix');
+  gl.uniformMatrix4fv(transformUniformLocation, true, transform.matrix.data);
 
   const projectionUniformLocation = gl.getUniformLocation(program, 'uProjectionMatrix');
   gl.uniformMatrix4fv(projectionUniformLocation, true, projectionMatrix.data);
-
 
   gl.drawElements(gl.TRIANGLES, mesh.numIndices, gl.UNSIGNED_SHORT, 0);
 }
@@ -255,23 +232,31 @@ const main = () => {
   if (!buffer) return;
 
   setupSlider('z-rotation', '°', (value: number) => {
-    rotZ = value;
-    updateTransform();
+    transform.roll = value;
   });
 
   setupSlider('y-rotation', '°', (value: number) => {
-    rotY = value;
-    updateTransform();
+    transform.yaw = value;
   });
 
   setupSlider('x-rotation', '°', (value: number) => {
-    rotX = value;
-    updateTransform();
+    transform.pitch = value;
   });
 
   setupSlider('scale', null, (value: number) => {
-    scale = value * 0.01;
-    updateTransform();
+    transform.scale = value * 0.01;
+  });
+
+  setupSlider('x-translation', null, (value: number) => {
+    transform.x = value * 0.01;
+  });
+
+  setupSlider('y-translation', null, (value: number) => {
+    transform.y = value * 0.01;
+  });
+
+  setupSlider('z-translation', null, (value: number) => {
+    transform.z = value * 0.01;
   });
 
   render(gl, program, buffer);

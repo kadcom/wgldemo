@@ -1,56 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>#TipisTipisGrafika</title>
     <link href="styles.css" rel="stylesheet">
-</head>
-<body class="bg-[#fff8dc] overflow-hidden h-screen flex flex-col p-0 m-0">
+  </head>
+  <body class="bg-[#fff8dc] overflow-hidden h-screen flex flex-col p-0 m-0">
 
     <!-- Title -->
     <header class="bg-[#E24912] w-full">
-        <h1 class="py-4 text-3xl font-bold text-center text-white"> #TipisTipisGrafika </h1>
+      <h1 class="py-4 text-3xl font-bold text-center text-white"> #TipisTipisGrafika </h1>
     </header>
 
     <!-- WebGL Container with margin -->
     <div class="flex items-center justify-center flex-grow my-4">
-        <div class="w-full max-w-[calc(100vh*16/9)] h-full max-h-[calc(100vw*9/16)] relative">
-            <canvas id="webgl-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
-        </div>
+      <div class="w-full max-w-[calc(100vh*16/9)] h-full max-h-[calc(100vw*9/16)] relative">
+        <canvas id="webgl-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+      </div>
     </div>
     <!-- rotation sliders -->
-    <div class="px-4 space-y-4">
-    <div class="flex items-center">
-        <label for="x-rotation" class="mr-2">X Rotation:</label>
-        <input type="range" id="x-rotation" name="x-rotation" min="-180" max="180" value="0" class="mr-2">
-        <span id="x-rotation-value">0°</span>
-    </div>
-    <div class="flex items-center">
-        <label for="y-rotation" class="mr-2">Y Rotation:</label>
-        <input type="range" id="y-rotation" name="y-rotation" min="-180" max="180" value="0" class="mr-2">
-        <span id="y-rotation-value">0°</span>
-    </div>
-    <div class="flex items-center">
-        <label for="z-rotation" class="mr-2">Z Rotation:</label>
-        <input type="range" id="z-rotation" name="z-rotation" min="-180" max="180" value="0" class="mr-2">
-        <span id="z-rotation-value">0°</span>
-    </div>
-<div class="flex items-center">
-        <label for="scale" class="mr-2">Scale:</label>
-        <input type="range" id="scale" name="scale" min="1" max="100" value="100" class="mr-2">
-        <span id="scale-value">100%</span>
-    </div>
+    <div class="flex flex-col px-4 sm:flex-row sm:space-x-4">
+      <div class="space-y-4">
+        <div class="flex items-center">
+          <label for="x-rotation" class="mr-2">X Rotation:</label>
+          <input type="range" id="x-rotation" name="x-rotation" min="-180" max="180" value="0" class="mr-2">
+          <span id="x-rotation-value">0°</span>
+        </div>
+        <div class="flex items-center">
+          <label for="y-rotation" class="mr-2">Y Rotation:</label>
+          <input type="range" id="y-rotation" name="y-rotation" min="-180" max="180" value="0" class="mr-2">
+          <span id="y-rotation-value">0°</span>
+        </div>
+        <div class="flex items-center">
+          <label for="z-rotation" class="mr-2">Z Rotation:</label>
+          <input type="range" id="z-rotation" name="z-rotation" min="-180" max="180" value="0" class="mr-2">
+          <span id="z-rotation-value">0°</span>
+        </div>
+        <div class="flex items-center">
+          <label for="scale" class="mr-2">Scale:</label>
+          <input type="range" id="scale" name="scale" min="1" max="100" value="100" class="mr-2">
+          <span id="scale-value">100%</span>
+        </div>
+      </div>
 
-</div>
+      <div class="space-y-4">
+
+        <div class="flex items-center">
+          <label for="x-translation" class="mr-2">X Translation:</label>
+          <input type="range" id="x-translation" name="x-translation" min="-500" max="500" value="0" class="mr-2">
+          <span id="x-translation-value">0</span>
+        </div>
+        <div class="flex items-center">
+          <label for="y-translation" class="mr-2">Y Translation:</label>
+          <input type="range" id="y-translation" name="y-translation" min="-500" max="500" value="0" class="mr-2">
+          <span id="y-translation-value">0</span>
+        </div>
+        <div class="flex items-center">
+          <label for="z-translation" class="mr-2">Z Translation:</label>
+          <input type="range" id="z-translation" name="z-translation" min="-500" max="500" value="0" class="mr-2">
+          <span id="z-translation-value">0</span>
+        </div>
+      </div>
+
+    </div>
 
     <!-- Footer -->
     <footer class="bg-[#E24912] w-full">
-        <p class="py-2 text-sm text-center text-white">Copyright (c) 2023 Didiet Noor</p>
+      <p class="py-2 text-sm text-center text-white">Copyright (c) 2023 Didiet Noor</p>
     </footer>
 
     <!-- WebGL and other necessary scripts -->
     <script src="app.ts" type="module"></script>
-</body>
+  </body>
 </html>
 
