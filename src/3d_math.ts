@@ -1,300 +1,4 @@
 // Row-Major, Left-Handed, Post-Multiply Matrix 
-
-class Vec2 {
-  data: Float32Array;
-
-  constructor(x: number = 0.0, y: number = 0.0) {
-    this.data = new Float32Array(2);
-    this.data[0] = x;
-    this.data[1] = y;
-  }
-
-  get x(): number { return this.data[0]; }
-  get y(): number { return this.data[1]; }
-
-  set x(value: number) { this.data[0] = value; }
-  set y(value: number) { this.data[1] = value; }
-
-  add(other: Vec2): Vec2 {
-    const result = new Vec2();
-    result.x = this.x + other.x;
-    result.y = this.y + other.y;
-    return result;
-  }
-
-  subtract(other: Vec2): Vec2 {
-    const result = new Vec2();
-    result.x = this.x - other.x;
-    result.y = this.y - other.y;
-    return result;
-  }
-
-  scale(scalar: number): Vec2 {
-    const result = new Vec2();
-    result.x = this.x * scalar;
-    result.y = this.y * scalar;
-    return result;
-  }
-}
-
-class Vec3 {
-  data: Float32Array;
-
-  constructor(x: number = 0.0, y: number = 0.0, z: number = 0.0) {
-    this.data = new Float32Array(3);
-    this.data[0] = x;
-    this.data[1] = y;
-    this.data[2] = z;
-  }
-
-  // Position
-
-  get x(): number { return this.data[0]; }
-  get y(): number { return this.data[1]; }
-  get z(): number { return this.data[2]; }
-
-  set x(value: number) { this.data[0] = value; }
-  set y(value: number) { this.data[1] = value; }
-  set z(value: number) { this.data[2] = value; }
- 
-  // Colour
-  get r(): number { return this.data[0]; }
-  get g(): number { return this.data[1]; }
-  get b(): number { return this.data[2]; }
-  
-  set r(value: number) { this.data[0] = value; }
-  set g(value: number) { this.data[1] = value; }
-  set b(value: number) { this.data[2] = value; }
-
-  get htmlHex(): string {
-    const r = Math.floor(this.r * 255);
-    const g = Math.floor(this.g * 255);
-    const b = Math.floor(this.b * 255);
-    return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
-  }
-
-  add(other: Vec3): Vec3 {
-    const result = new Vec3();
-    result.x = this.x + other.x;
-    result.y = this.y + other.y;
-    result.z = this.z + other.z;
-    return result;
-  }
-
-  subtract(other: Vec3): Vec3 {
-    const result = new Vec3();
-    result.x = this.x - other.x;
-    result.y = this.y - other.y;
-    result.z = this.z - other.z;
-    return result;
-  }
-
-  scale(scalar: number): Vec3 {
-    const result = new Vec3();
-    result.x = this.x * scalar;
-    result.y = this.y * scalar;
-    result.z = this.z * scalar;
-    return result;
-  }
-
-  dot(other: Vec3): number {
-    return this.x * other.x + this.y * other.y + this.z * other.z;
-  }
-
-  cross(other: Vec3): Vec3 {
-    const result = new Vec3();
-    result.x = this.y * other.z - this.z * other.y;
-    result.y = this.z * other.x - this.x * other.z;
-    result.z = this.x * other.y - this.y * other.x;
-    return result;
-  }
-
-  magnitude(): number {
-    return Math.sqrt(this.dot(this));
-  }
-
-  normalised(): Vec3 {
-    const result = new Vec3();
-    const overMag = 1.0/ this.magnitude();
-    result.x = this.x * overMag;
-    result.y = this.y * overMag;
-    result.z = this.z * overMag;
-    return result;
-  }
-
-  static get zero(): Vec3 {
-    const result = new Vec3();
-    result.x = 0.0;
-    result.y = 0.0;
-    result.z = 0.0;
-    return result;
-  }
-
-  static get up(): Vec3 {
-    const result = new Vec3();
-    result.x = 0.0;
-    result.y = 1.0;
-    result.z = 0.0;
-    return result;
-  }
-
-  static get down(): Vec3 {
-    const result = new Vec3();
-    result.x = 0.0;
-    result.y = -1.0;
-    result.z = 0.0;
-    return result;
-  }
-
-  static get left(): Vec3 {
-    const result = new Vec3();
-    result.x = -1.0;
-    result.y = 0.0;
-    result.z = 0.0;
-    return result;
-  }
-
-  static get right(): Vec3 {
-    const result = new Vec3();
-    result.x = 1.0;
-    result.y = 0.0;
-    result.z = 0.0;
-    return result;
-  }
-
-  static get forward(): Vec3 {
-    const result = new Vec3();
-    result.x = 0.0;
-    result.y = 0.0;
-    result.z = 1.0;
-    return result;
-  }
-
-  static get backward(): Vec3 {
-    const result = new Vec3();
-    result.x = 0.0;
-    result.y = 0.0;
-    result.z = -1.0;
-    return result;
-  }
-
-  static fromVec2(vec2: Vec2): Vec3 {
-    const result = new Vec3();
-    result.x = vec2.x;
-    result.y = vec2.y;
-    result.z = 0.0;
-    return result;
-  }
-}
-
-type Colour3 = Vec3;
-
-class Vec4 {
-  data: Float32Array;
-
-  constructor(x: number = 0.0, y: number = 0.0, z: number = 0.0, w: number = 1.0) {
-    this.data = new Float32Array(4);
-    this.data[0] = x;
-    this.data[1] = y;
-    this.data[2] = z;
-    this.data[3] = w;
-  }
-
-  get x(): number { return this.data[0]; }
-  get y(): number { return this.data[1]; }
-  get z(): number { return this.data[2]; }
-  get w(): number { return this.data[3]; }
-
-  set x(value: number) { this.data[0] = value; }
-  set y(value: number) { this.data[1] = value; }
-  set z(value: number) { this.data[2] = value; }
-  set w(value: number) { this.data[3] = value; }
-
-  get r(): number { return this.data[0]; }
-  get g(): number { return this.data[1]; }
-  get b(): number { return this.data[2]; }
-  get a(): number { return this.data[3]; }
-
-  set r(value: number) { this.data[0] = value; }
-  set g(value: number) { this.data[1] = value; }
-  set b(value: number) { this.data[2] = value; }
-  set a(value: number) { this.data[3] = value; }
-
-  add(other: Vec4): Vec4 {
-    const result = new Vec4();
-    result.x = this.x + other.x;
-    result.y = this.y + other.y;
-    result.z = this.z + other.z;
-    result.w = this.w + other.w;
-    return result;
-  }
-
-  subtract(other: Vec4): Vec4 {
-    const result = new Vec4();
-    result.x = this.x - other.x;
-    result.y = this.y - other.y;
-    result.z = this.z - other.z;
-    result.w = this.w - other.w;
-    return result;
-  }
-
-  scale(scalar: number): Vec4 {
-    const result = new Vec4();
-    result.x = this.x * scalar;
-    result.y = this.y * scalar;
-    result.z = this.z * scalar;
-    result.w = this.w * scalar;
-    return result;
-  }
-
-  dot(other: Vec4): number {
-    return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
-  }
-
-  cross(other: Vec4): Vec4 {
-    const result = new Vec4();
-    result.x = this.y * other.z - this.z * other.y;
-    result.y = this.z * other.x - this.x * other.z;
-    result.z = this.x * other.y - this.y * other.x;
-    result.w = 0.0;
-    return result;
-  }
-
-  magnitude(): number {
-    return Math.sqrt(this.dot(this));
-  }
-
-  normalised(): Vec4 {
-    const result = new Vec4();
-    const overMag = 1.0/ this.magnitude();
-    result.x = this.x * overMag;
-    result.y = this.y * overMag;
-    result.z = this.z * overMag;
-    result.w = this.w * overMag;
-    return result;
-  }
-
-  matmul(mat: Mat4x4): Vec4 {
-    const result = new Vec4();
-    result.x = this.x * mat.m11 + this.y * mat.m21 + this.z * mat.m31 + this.w * mat.m41;
-    result.y = this.x * mat.m12 + this.y * mat.m22 + this.z * mat.m32 + this.w * mat.m42;
-    result.z = this.x * mat.m13 + this.y * mat.m23 + this.z * mat.m33 + this.w * mat.m43;
-    result.w = this.x * mat.m14 + this.y * mat.m24 + this.z * mat.m34 + this.w * mat.m44;
-    return result;
-  }
-
-  static fromVec3(vec3: Vec3): Vec4 {
-    const result = new Vec4();
-    result.x = vec3.x;
-    result.y = vec3.y;
-    result.z = vec3.z;
-    result.w = 1.0;
-    return result;
-  }
-}
-
-type Colour4 = Vec4;
-
 class Mat4x4 {
   data: Float32Array;
 
@@ -464,133 +168,304 @@ class Mat4x4 {
 
   static lookAt(eye: Vec3, target: Vec3, up: Vec3): Mat4x4 {
     const mat = new Mat4x4();
-    const zaxis = target.subtract(eye).normalised();
-    const xaxis = up.cross(zaxis).normalised();
-    const yaxis = zaxis.cross(xaxis);
+    const zAxis = target.subtract(eye).normalised;
+    const xAxis = up.cross(zAxis).normalised;
+    const yAxis = zAxis.cross(xAxis).normalised;
 
-    mat.m11 = xaxis.x;
-    mat.m12 = yaxis.x;
-    mat.m13 = zaxis.x;
+    mat.m11 = xAxis.x;
+    mat.m12 = yAxis.x;
+    mat.m13 = zAxis.x;
+    mat.m14 = 0.0;
 
-    mat.m21 = xaxis.y;
-    mat.m22 = yaxis.y;
-    mat.m23 = zaxis.y;
+    mat.m21 = xAxis.y;
+    mat.m22 = yAxis.y;
+    mat.m23 = zAxis.y;
+    mat.m24 = 0.0;
 
-    mat.m31 = xaxis.z;
-    mat.m32 = yaxis.z;
-    mat.m33 = zaxis.z;
+    mat.m31 = xAxis.z;
+    mat.m32 = yAxis.z;
+    mat.m33 = zAxis.z;
+    mat.m34 = 0.0;
 
-    mat.m41 = -xaxis.dot(eye);
-    mat.m42 = -yaxis.dot(eye);
-    mat.m43 = -zaxis.dot(eye);
+    mat.m41 = -xAxis.dot(eye);
+    mat.m42 = -yAxis.dot(eye);
+    mat.m43 = -zAxis.dot(eye);
     mat.m44 = 1.0;
+
     return mat;
   }
-
 };
 
 const deg2rad = (deg: number): number => {
   return deg * Math.PI / 180.0;
 }
 
-const epsilon = 0.00001;
+class Vec2 {
+  data: Float32Array;
 
-const isEquals = (a: number, b: number): boolean => {
-  return Math.abs(a - b) < epsilon;
+  constructor(x: number = 0, y: number = 0) {
+    this.data = new Float32Array(2);
+    this.data[0] = x;
+    this.data[1] = y;
+  }
+
+  get x(): number { return this.data[0]; }
+  get y(): number { return this.data[1]; }
+
+  set x(value: number) { this.data[0] = value; }
+  set y(value: number) { this.data[1] = value; }
+
+  get u(): number { return this.data[0]; }
+  get v(): number { return this.data[1]; }
+
+  set u(value: number) { this.data[0] = value; }
+  set v(value: number) { this.data[1] = value; }
 }
 
-class Transform {
+class Vec3 {
+  data: Float32Array;
 
-  private _yaw: number = 0.0;
-  private _pitch: number = 0.0;
-  private _roll: number = 0.0;
-  private _scale: number = 1.0;
-  private _x: number = 0.0;
-  private _y: number = 0.0;
-  private _z: number = 0.0;
-
-  private matrixCache: Mat4x4|null = null;
-  private dirty: boolean = true;
-
-  private markDirty(): void {
-    this.dirty = true;
+  constructor(x: number = 0, y: number = 0 , z: number = 0) {
+    this.data = new Float32Array(3);
+    this.data[0] = x;
+    this.data[1] = y;
+    this.data[2] = z;
   }
 
-  get yaw(): number { return this._yaw; }
-  get pitch(): number { return this._pitch; }
-  get roll(): number { return this._roll; }
-  get scale(): number { return this._scale; }
-  get x(): number { return this._x; }
-  get y(): number { return this._y; }
-  get z(): number { return this._z; }
+  get x(): number { return this.data[0]; }
+  get y(): number { return this.data[1]; }
+  get z(): number { return this.data[2]; }
 
-  set yaw(value: number) {
-    if (!isEquals(this._yaw, value)) {
-      this._yaw = value;
-      this.markDirty();
-    }
+  set x(value: number) { this.data[0] = value; }
+  set y(value: number) { this.data[1] = value; }
+  set z(value: number) { this.data[2] = value; }
+
+  set r(value: number) { this.data[0] = value; }
+  set g(value: number) { this.data[1] = value; }
+  set b(value: number) { this.data[2] = value; }
+
+  get r(): number { return this.data[0]; }
+  get g(): number { return this.data[1]; }
+  get b(): number { return this.data[2]; }
+
+  get magnitude(): number {
+    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
   }
 
-  set pitch(value: number) {
-    if (!isEquals(this._pitch, value)) {
-      this._pitch = value;
-      this.markDirty();
-    }
+  get normalised(): Vec3 {
+    const overMag = 1.0/this.magnitude;
+    return new Vec3(this.x * overMag, this.y * overMag, this.z * overMag);
   }
 
-  set roll(value: number) {
-    if (!isEquals(this._roll, value)) {
-      this._roll = value;
-      this.markDirty();
-    }
+  scale(value: number): Vec3 {
+    return new Vec3(this.x * value, this.y * value, this.z * value);
   }
 
-  set scale(value: number) {
-    if (!isEquals(this._scale, value)) {
-      this._scale = value;
-      this.markDirty();
-    }
+  add(other: Vec3): Vec3 {
+    return new Vec3(this.x + other.x, this.y + other.y, this.z + other.z);
   }
 
-  set x(value: number) {
-    if (!isEquals(this._x, value)) {
-      this._x = value;
-      this.markDirty();
-    }
+  subtract(other: Vec3): Vec3 {
+    return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z);
   }
 
-  set y(value: number) {
-    if (!isEquals(this._y, value)) {
-      this._y = value;
-      this.markDirty();
-    }
+  dot(other: Vec3): number {
+    return this.x * other.x + this.y * other.y + this.z * other.z;
   }
 
-  set z(value: number) {
-    if (!isEquals(this._z, value)) {
-      this._z = value;
-      this.markDirty();
-    }
+  cross(other: Vec3): Vec3 {
+    return new Vec3(
+      this.y * other.z - this.z * other.y,
+      this.z * other.x - this.x * other.z, 
+      this.x * other.y - this.y * other.x
+    );
   }
 
-  private updateMatrix(): void {
-    const scaleMatrix = Mat4x4.scale(this.scale, this.scale, this.scale);
+  static get zero(): Vec3 {
+    return new Vec3();
+  }
+
+  static get one(): Vec3 {
+    return new Vec3(1, 1, 1);
+  }
+
+  static get up(): Vec3 {
+    return new Vec3(0, 1, 0);
+  }
+
+  static get down(): Vec3 {
+    return new Vec3(0, -1, 0);
+  }
+
+  static get left(): Vec3 {
+    return new Vec3(-1, 0, 0);
+  }
+
+  static get right(): Vec3 {
+    return new Vec3(1, 0, 0);
+  }
+
+  static get forward(): Vec3 {
+    return new Vec3(0, 0, 1);
+  }
+
+  static get back(): Vec3 {
+    return new Vec3(0, 0, -1);
+  }
+};
+
+class Vec4 {
+  data: Float32Array;
+
+  constructor(x: number = 0, y: number = 0 , z: number = 0, w: number = 0) {
+    this.data = new Float32Array(4);
+    this.data[0] = x;
+    this.data[1] = y;
+    this.data[2] = z;
+    this.data[3] = w;
+  }
+
+  get x(): number { return this.data[0]; }
+  get y(): number { return this.data[1]; }
+  get z(): number { return this.data[2]; }
+  get w(): number { return this.data[3]; }
+
+  set x(value: number) { this.data[0] = value; }
+  set y(value: number) { this.data[1] = value; }
+  set z(value: number) { this.data[2] = value; }
+  set w(value: number) { this.data[3] = value; }
+
+  set r(value: number) { this.data[0] = value; }
+  set g(value: number) { this.data[1] = value; }
+  set b(value: number) { this.data[2] = value; }
+  set a(value: number) { this.data[3] = value; }
+
+  get r(): number { return this.data[0]; }
+  get g(): number { return this.data[1]; }
+  get b(): number { return this.data[2]; }
+  get a(): number { return this.data[3]; }
+
+  get xyz(): Vec3 {
+    return new Vec3(this.x, this.y, this.z);
+  }
+
+  get magnitude(): number {
+    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+  }
+
+  get normalised(): Vec4 {
+    const overMag = 1.0/this.magnitude;
+    return new Vec4(this.x * overMag, this.y * overMag, this.z * overMag, this.w * overMag);
+  }
+
+  add(other: Vec4): Vec4 {
+    return new Vec4(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w);
+  }
+
+  subtract(other: Vec4): Vec4 {
+    return new Vec4(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w);
+  }
+
+  dot(other: Vec4): number {
+    return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
+  }
+
+  cross(other: Vec4): Vec4 {
+    return new Vec4(
+      this.y * other.z - this.z * other.y,
+      this.z * other.x - this.x * other.z, 
+      this.x * other.y - this.y * other.x,
+      0.0
+    );
+  }
+
+  matmul(other: Mat4x4): Vec4 {
+    const result = new Vec4();
+    result.x = this.x * other.m11 + this.y * other.m21 + this.z * other.m31 + this.w * other.m41;
+    result.y = this.x * other.m12 + this.y * other.m22 + this.z * other.m32 + this.w * other.m42;
+    result.z = this.x * other.m13 + this.y * other.m23 + this.z * other.m33 + this.w * other.m43;
+    result.w = this.x * other.m14 + this.y * other.m24 + this.z * other.m34 + this.w * other.m44;
+    return result;
+  }
+
+  static get zero(): Vec4 {
+    return new Vec4();
+  }
+
+  static get one(): Vec4 {
+    return new Vec4(1, 1, 1);
+  }
+
+  static get up(): Vec4 {
+    return new Vec4(0, 1, 0);
+  }
+
+  static get down(): Vec4 {
+    return new Vec4(0, -1, 0);
+  }
+
+  static get left(): Vec4 {
+    return new Vec4(-1, 0, 0);
+  }
+
+  static get right(): Vec4 {
+    return new Vec4(1, 0, 0);
+  }
+
+  static get forward(): Vec4 {
+    return new Vec4(0, 0, 1);
+  }
+
+  static get back(): Vec4 {
+    return new Vec4(0, 0, -1);
+  }
+
+
+  static fromVec3(vec: Vec3): Vec4 {
+    return new Vec4(vec.x, vec.y, vec.z, 1.0);
+  }
+};
+
+class Rotation {
+  yaw: number = 0.0;
+  pitch: number = 0.0;
+  roll: number = 0.0;
+
+  get matrix(): Mat4x4 {
     const rotateMatrix = Mat4x4.rotateZ(deg2rad(this.roll))
     .multiply(Mat4x4.rotateX(deg2rad(this.pitch)))
     .multiply(Mat4x4.rotateY(deg2rad(this.yaw)));
-    const translateMatrix = Mat4x4.translate(this.x, this.y, this.z);
-
-    this.matrixCache = scaleMatrix.multiply(rotateMatrix).multiply(translateMatrix);
-    this.dirty = false;
+    return rotateMatrix;
   }
 
+  constructor(yaw: number = 0.0, pitch: number = 0.0, roll: number = 0.0) {
+    this.yaw = yaw;
+    this.pitch = pitch;
+    this.roll = roll;
+  }
+
+  static YawPitchRoll(yaw: number, pitch: number, roll: number): Rotation {
+    return new Rotation(yaw, pitch, roll);
+  }
+
+  static fromVec3(vec: Vec3): Rotation {
+    return new Rotation(vec.x, vec.y, vec.z);
+  }
+};
+
+class Transform {
+  // scale 
+  scale: number = 1.0;
+  rotation: Rotation = new Rotation();
+  position: Vec3 = new Vec3();
+
   get matrix(): Mat4x4 {
-    if (this.dirty || this.matrixCache === null) {
-      this.updateMatrix();
-    }
-    return this.matrixCache!;
+    const scaleMatrix = Mat4x4.scale(this.scale, this.scale, this.scale);
+    const translateMatrix = Mat4x4.translate(this.position.x, this.position.y, this.position.z);
+
+    return scaleMatrix.multiply(this.rotation.matrix).multiply(translateMatrix);
   }
 }
 
 
-export { Mat4x4, deg2rad, Transform, Vec2, Vec3, Vec4, Colour3, Colour4 };
+export { Mat4x4, deg2rad, Transform, Vec2, Vec3, Vec4, Rotation};

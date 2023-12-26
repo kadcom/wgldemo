@@ -1,8 +1,15 @@
+#version 300 es
+
 precision mediump float;
 
 uniform vec3 uColour;
-varying vec3 vVertexColour;
+
+// input dari vertex shader
+in vec3 vVertexColour;
+
+// output ke frame buffer
+layout(location = 0) out vec4 vFragColour;
 
 void main() {
-  gl_FragColor = vec4(vVertexColour, 1.0);
+  vFragColour = vec4(vVertexColour, 1.0);
 }

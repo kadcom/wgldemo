@@ -1,6 +1,8 @@
+#version 300 es
+
 // input
-attribute vec3 aVertexPosition;
-attribute vec3 aVertexColour;
+layout(location = 0) in vec3 aVertexPosition;
+layout(location = 1) in vec3 aVertexColour;
 
 // constant 
 uniform mat4 uModelTransformMatrix;
@@ -8,7 +10,7 @@ uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 // output
-varying vec3 vVertexColour;
+out vec3 vVertexColour;
 
 void main() {
   vVertexColour = aVertexColour;
