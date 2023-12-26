@@ -2,7 +2,7 @@
 
 import vert from './shader.vert';
 import frag from './shader.frag';
-import {Mat4x4, Transform, deg2rad} from './3d_math';
+import {Mat4x4, Transform, deg2rad, Vec3} from './3d_math';
 
 type Mesh = {
   vertexBuffer: WebGLBuffer;
@@ -55,6 +55,12 @@ const vert_component = 3;
 const aspect = 16.0 / 9.0;
 // const projectionMatrix = Mat4x4.ortho(2 * aspect, 2, -1, 1);
 const projectionMatrix = Mat4x4.perspective(deg2rad(45.0), aspect, 0.1, 100.0);
+
+const campos = new Vec3(0, 0, -5);
+
+const viewMatrix = Mat4x4.lookAt(campos, Vec3.forward, Vec3.up);
+// const viewMatrix = Mat4x4.identity; 
+// const projectionMatrix = Mat4x4.perspectiveLookAt(deg2rad(45.0), aspect, 0.1, 100.0, Vec3.zero, Vec3.zero, Vec3.up);
 
 const transform = new Transform();
 
@@ -123,6 +129,9 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
 
   const projectionUniformLocation = gl.getUniformLocation(program, 'uProjectionMatrix');
   gl.uniformMatrix4fv(projectionUniformLocation, true, projectionMatrix.data);
+
+  const viewUniformLocation = gl.getUniformLocation(program, 'uViewMatrix');
+  gl.uniformMatrix4fv(viewUniformLocation, true, viewMatrix.data);
 
   gl.drawElements(gl.TRIANGLES, mesh.numIndices, gl.UNSIGNED_SHORT, 0);
 }
