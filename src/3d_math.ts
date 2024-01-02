@@ -6,6 +6,7 @@ class Mat4x4 {
     this.data = new Float32Array(16);
   }
 
+
   get m11(): number { return this.data[0]; }
   get m12(): number { return this.data[1]; }
   get m13(): number { return this.data[2]; }
@@ -59,6 +60,99 @@ class Mat4x4 {
     result.m43 = this.m41 * other.m13 + this.m42 * other.m23 + this.m43 * other.m33 + this.m44 * other.m43;
     result.m44 = this.m41 * other.m14 + this.m42 * other.m24 + this.m43 * other.m34 + this.m44 * other.m44;
     return result;
+  }
+
+  scale(value: number): Mat4x4 {
+    const mat = new Mat4x4();
+    mat.m11 = this.m11 * value;
+    mat.m12 = this.m12 * value;
+    mat.m13 = this.m13 * value;
+    mat.m14 = this.m14 * value;
+    mat.m21 = this.m21 * value;
+    mat.m22 = this.m22 * value;
+    mat.m23 = this.m23 * value;
+    mat.m24 = this.m24 * value;
+    mat.m31 = this.m31 * value;
+    mat.m32 = this.m32 * value;
+    mat.m33 = this.m33 * value;
+    mat.m34 = this.m34 * value;
+    mat.m41 = this.m41 * value;
+    mat.m42 = this.m42 * value;
+    mat.m43 = this.m43 * value;
+    mat.m44 = this.m44 * value;
+    return mat;
+  }
+
+  get transpose(): Mat4x4 {
+    const mat = new Mat4x4();
+    mat.m11 = this.m11;
+    mat.m12 = this.m21;
+    mat.m13 = this.m31;
+    mat.m14 = this.m41;
+    mat.m21 = this.m12;
+    mat.m22 = this.m22;
+    mat.m23 = this.m32;
+    mat.m24 = this.m42;
+    mat.m31 = this.m13;
+    mat.m32 = this.m23;
+    mat.m33 = this.m33;
+    mat.m34 = this.m43;
+    mat.m41 = this.m14;
+    mat.m42 = this.m24;
+    mat.m43 = this.m34;
+    mat.m44 = this.m44;
+    return mat;
+  }
+
+  get inverse(): Mat4x4 {
+    const mat = new Mat4x4();
+    const m11 = this.m11; const m12 = this.m12; const m13 = this.m13; const m14 = this.m14;
+    const m21 = this.m21; const m22 = this.m22; const m23 = this.m23; const m24 = this.m24;
+    const m31 = this.m31; const m32 = this.m32; const m33 = this.m33; const m34 = this.m34;
+    const m41 = this.m41; const m42 = this.m42; const m43 = this.m43; const m44 = this.m44;
+
+    mat.m11 = m23 * m34 * m42 - m24 * m33 * m42 + m24 * m32 * m43 - m22 * m34 * m43 - m23 * m32 * m44 + m22 * m33 * m44;
+    mat.m12 = m14 * m33 * m42 - m13 * m34 * m42 - m14 * m32 * m43 + m12 * m34 * m43 + m13 * m32 * m44 - m12 * m33 * m44;
+    mat.m13 = m13 * m24 * m42 - m14 * m23 * m42 + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44 + m12 * m23 * m44;
+    mat.m14 = m14 * m23 * m32 - m13 * m24 * m32 - m14 * m22 * m33 + m12 * m24 * m33 + m13 * m22 * m34 - m12 * m23 * m34;
+    mat.m21 = m24 * m33 * m41 - m23 * m34 * m41 - m24 * m31 * m43 + m21 * m34 * m43 + m23 * m31 * m44 - m21 * m33 * m44;
+    mat.m22 = m13 * m34 * m41 - m14 * m33 * m41 + m14 * m31 * m43 - m11 * m34 * m43 - m13 * m31 * m44 + m11 * m33 * m44;
+    mat.m23 = m14 * m23 * m41 - m13 * m24 * m41 - m14 * m21 * m43 + m11 * m24 * m43 + m13 * m21 * m44 - m11 * m23 * m44;
+    mat.m24 = m13 * m24 * m31 - m14 * m23 * m31 + m14 * m21 * m33 - m11 * m24 * m33 - m13 * m21 * m34 + m11 * m23 * m34;
+    mat.m31 = m22 * m34 * m41 - m24 * m32 * m41 + m24 * m31 * m42 - m21 * m34 * m42 - m22 * m31 * m44 + m21 * m32 * m44;
+    mat.m32 = m14 * m32 * m41 - m12 * m34 * m41 - m14 * m31 * m42 + m11 * m34 * m42 + m12 * m31 * m44 - m11 * m32 * m44;
+    mat.m33 = m12 * m24 * m41 - m14 * m22 * m41 + m14 * m21 * m42 - m11 * m24 * m42 - m12 * m21 * m44 + m11 * m22 * m44;
+    mat.m34 = m14 * m22 * m31 - m12 * m24 * m31 - m14 * m21 * m32 + m11 * m24 * m32 + m12 * m21 * m34 - m11 * m22 * m34;
+    mat.m41 = m23 * m32 * m41 - m22 * m33 * m41 - m23 * m31 * m42 + m21 * m33 * m42 + m22 * m31 * m43 - m21 * m32 * m43;
+    mat.m42 = m12 * m33 * m41 - m13 * m32 * m41 + m13 * m31 * m42 - m11 * m33 * m42 - m12 * m31 * m43 + m11 * m32 * m43;
+    mat.m43 = m13 * m22 * m41 - m12 * m23 * m41 - m13 * m21 * m42 + m11 * m23 * m42 + m12 * m21 * m43 - m11 * m22 * m43;
+    mat.m44 = m12 * m23 * m31 - m13 * m22 * m31 + m13 * m21 * m32 - m11 * m23 * m32 - m12 * m21 * m33 + m11 * m22 * m33;
+
+    const det = m11 * mat.m11 + m21 * mat.m12 + m31 * mat.m13 + m41 * mat.m14;
+    if (det === 0.0) {
+      throw new Error("Matrix is not invertible");
+    }
+
+    const invDet = 1.0 / det;
+    mat.m11 *= invDet;
+    mat.m12 *= invDet;
+    mat.m13 *= invDet;
+    mat.m14 *= invDet;
+    mat.m21 *= invDet;
+    mat.m22 *= invDet;
+    mat.m23 *= invDet;
+    mat.m24 *= invDet;
+    mat.m31 *= invDet;
+    mat.m32 *= invDet;
+    mat.m33 *= invDet;
+    mat.m34 *= invDet;
+    mat.m41 *= invDet;
+    mat.m42 *= invDet;
+    mat.m43 *= invDet;
+    mat.m44 *= invDet;
+    
+    return mat;
+
   }
 
   static scale(x: number, y: number, z: number): Mat4x4 {
