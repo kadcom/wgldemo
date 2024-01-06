@@ -1,3 +1,5 @@
+import { deg2rad, isEqual } from "./math";
+
 // Row-Major, Left-Handed, Post-Multiply Matrix 
 class Mat4x4 {
   data: Float32Array;
@@ -290,10 +292,6 @@ class Mat4x4 {
   }
 };
 
-const deg2rad = (deg: number): number => {
-  return deg * Math.PI / 180.0;
-}
-
 class Vec2 {
   data: Float32Array;
 
@@ -314,6 +312,10 @@ class Vec2 {
 
   set u(value: number) { this.data[0] = value; }
   set v(value: number) { this.data[1] = value; }
+
+  equals(other: Vec2): boolean {
+    return isEqual(this.x, other.x) && isEqual(this.y, other.y);
+  }
 }
 
 class Vec3 {
@@ -324,6 +326,10 @@ class Vec3 {
     this.data[0] = x;
     this.data[1] = y;
     this.data[2] = z;
+  }
+
+  equals(other: Vec3): boolean {
+    return isEqual(this.x, other.x) && isEqual(this.y, other.y) && isEqual(this.z, other.z);
   }
 
   get x(): number { return this.data[0]; }
@@ -417,6 +423,10 @@ class Vec4 {
     this.data[1] = y;
     this.data[2] = z;
     this.data[3] = w;
+  }
+
+  equals(other: Vec4): boolean {
+    return isEqual(this.x, other.x) && isEqual(this.y, other.y) && isEqual(this.z, other.z) && isEqual(this.w, other.w);
   }
 
   get x(): number { return this.data[0]; }

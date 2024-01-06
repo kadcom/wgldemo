@@ -145,7 +145,9 @@ class Mesh {
     ];
 
 
-    return Mesh.fromVertices(gl, new Float32Array(vertices), new Uint16Array(indices));
+    return Mesh.fromVertices(gl, 
+                             new Float32Array(vertices), 
+                             new Uint16Array(indices));
   }
 }
 
