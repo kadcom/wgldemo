@@ -82,6 +82,17 @@ class Mesh {
       vert_component * Float32Array.BYTES_PER_ELEMENT
     );
 
+    const texCoordAttribLocation = 2;
+    gl.enableVertexAttribArray(texCoordAttribLocation);
+    gl.vertexAttribPointer(
+      texCoordAttribLocation, 
+      2, 
+      gl.FLOAT, 
+      false,
+      vert_stride * Float32Array.BYTES_PER_ELEMENT,
+      (vert_component + 3) * Float32Array.BYTES_PER_ELEMENT
+    );
+
     gl.bindVertexArray(null);
 
     return new Mesh(buffer, indexBuffer, vao, indices.length);

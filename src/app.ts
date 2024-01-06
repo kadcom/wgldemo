@@ -4,12 +4,15 @@ import vert from './shader.vert';
 import frag from './shader.frag';
 import {Mat4x4, Transform, deg2rad, Vec3} from './3d_math';
 import { Mesh } from './3d_objects';
+import {isPowerOfTwo} from './math';
+import CrateDiffuse from 'url:./crate1_diffuse.png';
 
 let aspect = 16.0 / 9.0;
 let projectionMatrix = Mat4x4.perspective(deg2rad(45.0), aspect, 0.1, 100.0);
 
 const eyePos = new Vec3(-2.0, 3.0, -4.0);
 const transform = new Transform();
+let texture: WebGLTexture|null = null;
 
 let viewMatrix = Mat4x4.lookAt(eyePos, transform.position, Vec3.up);
 
@@ -22,7 +25,88 @@ const drawMesh = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh)
   const viewUniformLocation = gl.getUniformLocation(program, 'uViewMatrix');
   gl.uniformMatrix4fv(viewUniformLocation, true, viewMatrix.data);
 
+  // apply texture 
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  const textureUniformLocation = gl.getUniformLocation(program, 'uTexture');
+  gl.uniform1i(textureUniformLocation, 0);
+
   mesh.draw(gl);
+}
+
+const loadTexture = (gl: WebGL2RenderingContext, url: string|null): WebGLTexture|null => {
+
+  const texture = gl.createTexture();
+
+  if (!texture) {
+    return null;
+  }
+
+  // placeholder texture
+  // 2x2 pixel
+  // checkerboard pattern 
+  
+  const placeholderImage = new Uint8Array([
+    255, 255, 255, 255, // white
+    0, 0, 0, 255, // black
+    0, 0, 0, 255, // black
+    255, 255, 255, 255, // white
+  ]);
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+ 
+  gl.texImage2D(
+    gl.TEXTURE_2D, 
+    0, 
+    gl.RGBA, 
+    2, 
+    2, 
+    0, 
+    gl.RGBA, 
+    gl.UNSIGNED_BYTE, 
+    placeholderImage
+  );
+
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.bindTexture(gl.TEXTURE_2D, null);
+
+  if (!url) {
+    return texture;
+  }
+
+  const image = new Image();
+  image.onload = () => {
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.texImage2D(
+      gl.TEXTURE_2D, 
+      0, 
+      gl.RGBA,
+      gl.RGBA, 
+      gl.UNSIGNED_BYTE, 
+      image
+    );
+
+    if (isPowerOfTwo(image.width) && isPowerOfTwo(image.height)) {
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    } else {
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); 
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    }
+    
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  }
+
+  image.src = url;
+
+  return texture;
 }
 
 const loadShader = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null => {
@@ -88,8 +172,7 @@ const setupRender = (gl: WebGL2RenderingContext) => {
 };
 
 const render = (gl: WebGL2RenderingContext, program: WebGLProgram, mesh: Mesh) => {  
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  
   drawMesh(gl, program, mesh);
   requestAnimationFrame(()  => render(gl, program, mesh))
 }
@@ -192,6 +275,12 @@ const main = () => {
   });
 
   observer.observe(canvasElem);
+
+  texture = loadTexture(gl, CrateDiffuse);
+
+  if (!texture) {
+    return;
+  }
 
   setupRender(gl);
   render(gl, program, mesh);
